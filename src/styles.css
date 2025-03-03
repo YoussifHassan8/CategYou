@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+:root {
+  --font-poppins: "Poppins", sans-serif;
+  --font-raleway: "Raleway", sans-serif;
+  --font-montserrat: "Montserrat", sans-serif;
+  --font-oswald: "Oswald", sans-serif;
+  --font-allura: "Allura", serif;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  a {
+    display: block;
+  }
+}
+
+@layer components {
+}
+
+@layer utilities {
+  .container {
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .font-raleway {
+    font-family: var(--font-raleway);
+  }
+  .font-montserrat {
+    font-family: var(--font-montserrat);
+  }
+  .font-oswald {
+    font-family: var(--font-oswald);
+  }
+  .font-allura {
+    font-family: var(--font-allura);
+  }
+}
+@theme {
+  /* Desktop-first breakpoints (max-width) */
+  --breakpoint-xl: 1535px; /* Desktop: < 1536px */
+  --breakpoint-lg: 1023px; /* max-lg: 1024px - 1 */
+  --breakpoint-md: 767px; /* max-md: 768px - 1 */
+  --breakpoint-sm: 639px; /* max-sm: 640px - 1 */
+}
+@layer variants {
+  /* Generate max-width variants for utilities */
+  @custom-media --sm (max-width: theme(--breakpoint-sm));
+  @custom-media --md (max-width: theme(--breakpoint-md));
+  @custom-media --lg (max-width: theme(--breakpoint-lg));
+  @custom-media --xl (max-width: theme(--breakpoint-xl));
+
+  @responsive-variant max-sm --sm;
+  @responsive-variant max-md --md;
+  @responsive-variant max-lg --lg;
+  @responsive-variant max-xl --xl;
+}
+
+@keyframes fade-in-up {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-50px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
+.animate-slide-in {
+  animation: slide-in 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
