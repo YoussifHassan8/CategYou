@@ -32,9 +32,7 @@ const NoFolders = ({
         <IoMdAddCircleOutline className="text-2xl" />
         Create new folder
       </button>
-      {currentWindow == 0 ? (
-        <></>
-      ) : (
+      {!currentWindow == 0 && (
         <CreateNewFolder
           folders={folders}
           setFolders={setFolders}

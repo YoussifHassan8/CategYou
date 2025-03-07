@@ -5,7 +5,7 @@ import VideoCard from "../components/VideoCard";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import CreateNewFolder from "../components/CreateNewFolder";
 
-const FolderContent = () => {
+const SpecificFolder = () => {
   const { folders, setFolders, likedVideos, currentWindow, setCurrentWindow } =
     useOutletContext();
   const navigate = useNavigate();
@@ -17,21 +17,27 @@ const FolderContent = () => {
     return <FolderNotFound />;
   }
 
+  let path = [];
+  let current = folders.folders[folderID];
+
+  while (current && current.id !== "root") {
+    path.unshift(current.name);
+    current = folders.folders[current.parentFolder];
+  }
+
+  const pathString = path.join("/");
   const currentFolder = folders.folders[folderID];
 
-  // Get the matching video objects from likedVideos
   const matchingVideos = currentFolder.videos
     .map((videoId) => likedVideos.find((video) => video.id === videoId))
     .filter((video) => video !== undefined);
 
-  // Get the subfolder objects
   const subFolders = currentFolder.subFolders
     .map((subFolderId) => folders.folders[subFolderId])
     .filter((folder) => folder !== undefined);
 
   return (
-    <div className="p-4">
-      {/* Optional: Add breadcrumb navigation */}
+    <div>
       <div className="mb-4">
         <button
           onClick={() => {
@@ -41,14 +47,14 @@ const FolderContent = () => {
               navigate(`/LikedVideos/folders/${currentFolder.parentFolder}`);
             }
           }}
-          className="text-gray-600 hover:text-gray-800"
+          className="cursor-pointer"
         >
           ← Back
         </button>
       </div>
 
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">{currentFolder.name}</h2>
+        <h2 className="text-2xl font-bold">{pathString}</h2>
         <button
           className="flex items-center justify-center gap-2 rounded-xl px-6 py-3 transition-all duration-300 shadow-sm text-white font-medium text-lg bg-[#FF0033] cursor-pointer hover:bg-[#E60030]"
           onClick={() => setCurrentWindow(1)}
@@ -69,7 +75,6 @@ const FolderContent = () => {
       )}
 
       <ul className="grid grid-cols-[repeat(auto-fit,minmax(340px,1fr))] gap-8">
-        {/* Render subfolders */}
         {subFolders.map((folder) => (
           <FolderCard
             key={folder.id}
@@ -84,7 +89,6 @@ const FolderContent = () => {
           />
         ))}
 
-        {/* Render matching videos */}
         {matchingVideos.map((video) => (
           <VideoCard key={video.id} video={video} />
         ))}
@@ -93,4 +97,4 @@ const FolderContent = () => {
   );
 };
 
-export default FolderContent;
+export default SpecificFolder;

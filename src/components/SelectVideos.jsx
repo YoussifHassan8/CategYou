@@ -30,7 +30,7 @@ const SelectVideos = ({
 
   const createFolder = () => {
     const selectedVideoIds = Object.entries(selectedVideos)
-      .filter(([_, isSelected]) => isSelected)
+      .filter(([, isSelected]) => isSelected)
       .map(([videoId]) => videoId);
 
     const newFolderId = `folder_${Date.now()}`;

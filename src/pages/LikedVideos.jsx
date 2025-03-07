@@ -75,8 +75,10 @@ const LikedVideos = ({ accessToken, setAccessToken }) => {
     <section className="container">
       <Header accessToken={accessToken} setAccessToken={setAccessToken} />
       <div className="flex items-center justify-between mb-2">
-        <Sort likedVideos={likedVideos} setLikedVideos={setLikedVideos} />
-        <div className="flex flex-wrap gap-2">
+        {!isFolderView && (
+          <Sort likedVideos={likedVideos} setLikedVideos={setLikedVideos} />
+        )}
+        <div className="flex flex-wrap gap-2 ml-auto">
           <Link
             to="/LikedVideos"
             className={`px-4 py-2 rounded-lg font-medium ${

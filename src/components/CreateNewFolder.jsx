@@ -10,7 +10,6 @@ const CreateNewFolder = ({
   setCurrentWindow,
 }) => {
   const [folderName, setFolderName] = useState("");
-  console.log(currentWindow);
   return (
     <>
       {currentWindow == 1 ? (

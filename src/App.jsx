@@ -5,7 +5,7 @@ import LikedVideos from "./pages/LikedVideos";
 import NotFound from "./pages/NotFound";
 import NavBar from "./components/NavBar";
 import Folders from "./pages/Folders";
-import FolderContent from "./pages/FolderContent";
+import SpecificFolder from "./pages/SpecificFolder";
 
 const App = () => {
   const [accessToken, setAccessToken] = useState(
@@ -45,7 +45,7 @@ const App = () => {
           }
         >
           <Route path="folders" element={<Folders />}>
-            <Route path=":folderID" element={<FolderContent />} />
+            <Route path=":folderID" element={<SpecificFolder />} />
           </Route>
         </Route>
 
