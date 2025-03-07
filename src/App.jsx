@@ -4,6 +4,8 @@ import Landing from "./pages/Landing";
 import LikedVideos from "./pages/LikedVideos";
 import NotFound from "./pages/NotFound";
 import NavBar from "./components/NavBar";
+import Folders from "./pages/Folders";
+import FolderContent from "./pages/FolderContent";
 
 const App = () => {
   const [accessToken, setAccessToken] = useState(
@@ -41,7 +43,11 @@ const App = () => {
               <Navigate to="/" replace />
             )
           }
-        />
+        >
+          <Route path="folders" element={<Folders />}>
+            <Route path=":folderID" element={<FolderContent />} />
+          </Route>
+        </Route>
 
         <Route path="*" element={<NotFound />} />
       </Routes>

@@ -4,14 +4,16 @@ import Header from "../components/Header";
 import VideoCard from "../components/VideoCard";
 import Sort from "../components/Sort";
 import VideoCardSkeleton from "../components/VideoCardSkeleton";
-import Folders from "../components/Folders";
+import { Link, Outlet, useLocation } from "react-router-dom";
+
 const LikedVideos = ({ accessToken, setAccessToken }) => {
   const [likedVideos, setLikedVideos] = useState(() => {
     const storedVideos = localStorage.getItem("likedVideos");
     return storedVideos ? JSON.parse(storedVideos) : [];
   });
 
-  const [isFolder, setIsFolder] = useState(false);
+  const location = useLocation();
+  const isFolderView = location.pathname.includes("folders");
 
   useEffect(() => {
     if (likedVideos.length > 0) return;
@@ -74,27 +76,28 @@ const LikedVideos = ({ accessToken, setAccessToken }) => {
       <Header accessToken={accessToken} setAccessToken={setAccessToken} />
       <div className="flex items-center justify-between mb-2">
         <Sort likedVideos={likedVideos} setLikedVideos={setLikedVideos} />
-        <div>
-          <button
-            onClick={() => setIsFolder(false)}
-            className={`px-4 py-2 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-gray-800 hover:shadow-md active:scale-95 ${
-              !isFolder ? "bg-gray-100 dark:bg-gray-800" : ""
+        <div className="flex flex-wrap gap-2">
+          <Link
+            to="/LikedVideos"
+            className={`px-4 py-2 rounded-lg font-medium ${
+              !isFolderView ? "bg-gray-100 dark:bg-gray-800" : ""
             }`}
           >
             Your liked videos
-          </button>
-          <button
-            onClick={() => setIsFolder(true)}
-            className={`px-4 py-2 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-gray-800 hover:shadow-md active:scale-95 ${
-              isFolder ? "bg-gray-100 dark:bg-gray-800" : ""
+          </Link>
+          <Link
+            to="/LikedVideos/folders"
+            className={`px-4 py-2 rounded-lg font-medium ${
+              isFolderView ? "bg-gray-100 dark:bg-gray-800" : ""
             }`}
           >
             Your folders
-          </button>
+          </Link>
         </div>
       </div>
-      {isFolder ? (
-        <Folders />
+
+      {isFolderView ? (
+        <Outlet context={{ likedVideos }} />
       ) : (
         <ul className="grid grid-cols-[repeat(auto-fit,minmax(340px,1fr))] gap-8">
           {likedVideos.length > 0
