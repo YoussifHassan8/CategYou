@@ -54,12 +54,33 @@ const SelectVideos = ({
         },
       };
 
-      localStorage.setItem("folders", JSON.stringify(updated));
+      const request = window.indexedDB.open("LikedVideosDB");
+
+      request.onsuccess = (event) => {
+        const db = event.target.result;
+        const transaction = db.transaction("folders", "readwrite");
+        const store = transaction.objectStore("folders");
+        store.put(updated, "foldersData");
+
+        transaction.oncomplete = () => {
+          console.log("Folders have been updated in the database.");
+        };
+
+        transaction.onerror = (event) => {
+          console.error("Transaction error:", event.target.errorCode);
+        };
+      };
+
+      request.onerror = (event) => {
+        console.error("Database error:", event.target.errorCode);
+      };
+
       return updated;
     });
 
     setCurrentWindow(0);
   };
+
   return (
     <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 px-4 py-3 rounded-lg bg-white dark:bg-[#3E3E3E] shadow-lg border border-gray-200 dark:border-gray-700 space-y-2 w-[350px]">
       <div className="flex items-center justify-center">

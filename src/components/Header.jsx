@@ -13,7 +13,6 @@ const Header = ({ accessToken, setAccessToken }) => {
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
-    localStorage.removeItem("likedVideos");
     localStorage.removeItem("user");
     setAccessToken(null);
     navigate("/");

@@ -1,24 +1,44 @@
 import { CgSortAz } from "react-icons/cg";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import PropTypes from "prop-types";
 
 const Sort = ({ likedVideos, setLikedVideos }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const originalLikedVideos = useRef(likedVideos);
-
   const toggleDropdown = (event) => {
     event.stopPropagation();
     setIsOpen((prev) => !prev);
   };
 
   const sortVideosByDateAdded = (order) => {
-    if (order === "newest") {
-      setLikedVideos(originalLikedVideos.current);
-      return;
-    }
+    const request = window.indexedDB.open("LikedVideosDB");
 
-    const reversedVideos = [...originalLikedVideos.current].reverse();
-    setLikedVideos(reversedVideos);
+    request.onsuccess = (event) => {
+      const db = event.target.result;
+      const transaction = db.transaction("videos", "readonly");
+      const store = transaction.objectStore("videos");
+      const getAllRequest = store.getAll();
+
+      getAllRequest.onsuccess = () => {
+        let sortedVideos = getAllRequest.result;
+
+        if (order === "newest")
+          sortedVideos = sortedVideos.sort((a, b) => a.order - b.order);
+        else sortedVideos = sortedVideos.sort((a, b) => b.order - a.order);
+
+        setLikedVideos(sortedVideos);
+      };
+
+      getAllRequest.onerror = (event) => {
+        console.error(
+          "Error fetching videos from IndexedDB:",
+          event.target.errorCode
+        );
+      };
+    };
+
+    request.onerror = (event) => {
+      console.error("Database error:", event.target.errorCode);
+    };
   };
 
   const sortVideosByDatePublished = (order) => {

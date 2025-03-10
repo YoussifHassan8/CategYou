@@ -7,69 +7,108 @@ import VideoCardSkeleton from "../components/VideoCardSkeleton";
 import { Link, Outlet, useLocation } from "react-router-dom";
 
 const LikedVideos = ({ accessToken, setAccessToken }) => {
-  const [likedVideos, setLikedVideos] = useState(() => {
-    const storedVideos = localStorage.getItem("likedVideos");
-    return storedVideos ? JSON.parse(storedVideos) : [];
-  });
-
+  const [likedVideos, setLikedVideos] = useState([]);
   const location = useLocation();
   const isFolderView = location.pathname.includes("folders");
 
   useEffect(() => {
-    if (likedVideos.length > 0) return;
+    const request = window.indexedDB.open("LikedVideosDB");
 
-    (async () => {
-      try {
-        console.log("Request to fetch the liked videos");
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      db.createObjectStore("videos", { keyPath: "id" });
+      db.createObjectStore("folders", { keyPath: "id" });
+    };
 
-        const playlistResponse = await fetch(
-          `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=LL&maxResults=50`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              Accept: "application/json",
-            },
-          }
-        );
+    request.onsuccess = (event) => {
+      const db = event.target.result;
+      const transaction = db.transaction("videos", "readonly");
+      const store = transaction.objectStore("videos");
+      const getAllRequest = store.getAll();
 
-        if (!playlistResponse.ok) {
-          throw new Error("Failed to fetch playlists");
+      getAllRequest.onsuccess = () => {
+        if (getAllRequest.result.length > 0) {
+          const sortedVideos = getAllRequest.result.sort(
+            (a, b) => a.order - b.order
+          );
+          setLikedVideos(sortedVideos);
+        } else {
+          fetchLikedVideos(db);
         }
+      };
+    };
 
-        const playlistData = await playlistResponse.json();
+    request.onerror = (event) => {
+      console.error("Database error:", event.target.errorCode);
+    };
+  }, [accessToken]);
 
-        if (!playlistData.items || playlistData.items.length === 0) return;
-
-        // Extract video IDs from the playlist items
-        const videoIds = playlistData.items
-          .map((item) => item.snippet.resourceId.videoId)
-          .join(",");
-
-        const videosResponse = await fetch(
-          `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoIds}&maxResults=50`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${accessToken}`,
-              Accept: "application/json",
-            },
-          }
-        );
-
-        console.log("Request to fetch video details");
-        if (!videosResponse.ok) {
-          throw new Error("Failed to fetch video details");
+  const fetchLikedVideos = async (db) => {
+    try {
+      const playlistResponse = await fetch(
+        `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=LL&maxResults=50`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            Accept: "application/json",
+          },
         }
+      );
 
-        const videosData = await videosResponse.json();
-        localStorage.setItem("likedVideos", JSON.stringify(videosData.items));
-        setLikedVideos(videosData.items);
-      } catch (error) {
-        console.error("Error fetching videos:", error);
+      if (!playlistResponse.ok) {
+        throw new Error("Failed to fetch playlists");
       }
-    })();
-  }, [accessToken, likedVideos]);
+
+      const playlistData = await playlistResponse.json();
+
+      if (!playlistData.items || playlistData.items.length === 0) return;
+
+      const videoIds = playlistData.items
+        .map((item) => item.snippet.resourceId.videoId)
+        .join(",");
+
+      const videosResponse = await fetch(
+        `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoIds}&maxResults=50`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            Accept: "application/json",
+          },
+        }
+      );
+
+      if (!videosResponse.ok) {
+        throw new Error("Failed to fetch video details");
+      }
+
+      const videosData = await videosResponse.json();
+
+      videosData.items.forEach((video, index) => {
+        video.order = index;
+      });
+
+      setLikedVideos(videosData.items);
+
+      const transaction = db.transaction("videos", "readwrite");
+      const store = transaction.objectStore("videos");
+
+      videosData.items.forEach((video) => {
+        store.put(video);
+      });
+
+      transaction.oncomplete = () => {
+        console.log("All videos have been stored in the database.");
+      };
+
+      transaction.onerror = (event) => {
+        console.error("Transaction error:", event.target.errorCode);
+      };
+    } catch (error) {
+      console.error("Error fetching videos:", error);
+    }
+  };
 
   return (
     <section className="container">
