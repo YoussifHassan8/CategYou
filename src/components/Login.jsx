@@ -11,6 +11,7 @@ const Login = ({ setAccessToken }) => {
       localStorage.setItem("accessToken", tokenResponse.access_token);
       setAccessToken(tokenResponse.access_token);
       navigate("/LikedVideos");
+      console.log(tokenResponse);
     },
     onError: (error) => {
       console.error("Login Failed:", error);
