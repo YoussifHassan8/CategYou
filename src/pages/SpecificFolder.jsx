@@ -11,29 +11,29 @@ const SpecificFolder = () => {
   const navigate = useNavigate();
   const { folderID } = useParams();
 
-  const isTheFolderFound = Object.hasOwn(folders.folders, folderID);
+  const isTheFolderFound = Object.hasOwn(folders, folderID);
 
   if (!isTheFolderFound) {
     return <FolderNotFound />;
   }
 
   let path = [];
-  let current = folders.folders[folderID];
+  let current = folders[folderID];
 
   while (current && current.id !== "root") {
     path.unshift(current.name);
-    current = folders.folders[current.parentFolder];
+    current = folders[current.parentFolder];
   }
 
   const pathString = path.join("/");
-  const currentFolder = folders.folders[folderID];
+  const currentFolder = folders[folderID];
 
   const matchingVideos = currentFolder.videos
     .map((videoId) => likedVideos.find((video) => video.id === videoId))
     .filter((video) => video !== undefined);
 
   const subFolders = currentFolder.subFolders
-    .map((subFolderId) => folders.folders[subFolderId])
+    .map((subFolderId) => folders[subFolderId])
     .filter((folder) => folder !== undefined);
 
   return (

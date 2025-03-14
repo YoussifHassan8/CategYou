@@ -10,8 +10,9 @@ const YourFolders = ({
   currentWindow,
   setCurrentWindow,
 }) => {
-  const rootFolderIds = folders.folders.root.subFolders;
-  const rootFolders = rootFolderIds.map((id) => folders.folders[id]);
+  console.log(folders);
+  const rootFolderIds = folders.root.subFolders;
+  const rootFolders = rootFolderIds.map((id) => folders[id]);
 
   return (
     <>
@@ -52,20 +53,14 @@ const YourFolders = ({
 
 YourFolders.propTypes = {
   folders: PropTypes.shape({
-    folders: PropTypes.objectOf(
-      PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        videos: PropTypes.arrayOf(PropTypes.string).isRequired,
-        subFolders: PropTypes.arrayOf(PropTypes.string).isRequired,
-        createdAt: PropTypes.number.isRequired,
-        parentFolder: PropTypes.string,
-      })
-    ).isRequired,
+    root: PropTypes.shape({
+      subFolders: PropTypes.arrayOf(PropTypes.string).isRequired,
+    }).isRequired,
   }).isRequired,
   setFolders: PropTypes.func.isRequired,
   likedVideos: PropTypes.array.isRequired,
   currentWindow: PropTypes.number.isRequired,
   setCurrentWindow: PropTypes.func.isRequired,
 };
+
 export default YourFolders;

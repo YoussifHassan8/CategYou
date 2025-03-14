@@ -12,38 +12,10 @@ const LikedVideos = ({ accessToken, setAccessToken }) => {
   const isFolderView = location.pathname.includes("folders");
 
   useEffect(() => {
-    const request = window.indexedDB.open("LikedVideosDB");
+    fetchLikedVideos();
+  }, []);
 
-    request.onupgradeneeded = (event) => {
-      const db = event.target.result;
-      db.createObjectStore("videos", { keyPath: "id" });
-      db.createObjectStore("folders", { keyPath: "id" });
-    };
-
-    request.onsuccess = (event) => {
-      const db = event.target.result;
-      const transaction = db.transaction("videos", "readonly");
-      const store = transaction.objectStore("videos");
-      const getAllRequest = store.getAll();
-
-      getAllRequest.onsuccess = () => {
-        if (getAllRequest.result.length > 0) {
-          const sortedVideos = getAllRequest.result.sort(
-            (a, b) => a.order - b.order
-          );
-          setLikedVideos(sortedVideos);
-        } else {
-          fetchLikedVideos(db);
-        }
-      };
-    };
-
-    request.onerror = (event) => {
-      console.error("Database error:", event.target.errorCode);
-    };
-  }, [accessToken]);
-
-  const fetchLikedVideos = async (db) => {
+  const fetchLikedVideos = async () => {
     try {
       const playlistResponse = await fetch(
         `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=LL&maxResults=50`,
@@ -55,7 +27,6 @@ const LikedVideos = ({ accessToken, setAccessToken }) => {
           },
         }
       );
-
       if (!playlistResponse.ok) {
         throw new Error("Failed to fetch playlists");
       }
@@ -90,21 +61,6 @@ const LikedVideos = ({ accessToken, setAccessToken }) => {
       });
 
       setLikedVideos(videosData.items);
-
-      const transaction = db.transaction("videos", "readwrite");
-      const store = transaction.objectStore("videos");
-
-      videosData.items.forEach((video) => {
-        store.put(video);
-      });
-
-      transaction.oncomplete = () => {
-        console.log("All videos have been stored in the database.");
-      };
-
-      transaction.onerror = (event) => {
-        console.error("Transaction error:", event.target.errorCode);
-      };
     } catch (error) {
       console.error("Error fetching videos:", error);
     }

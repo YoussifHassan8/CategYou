@@ -34,23 +34,20 @@ const SelectVideos = ({
       .map(([videoId]) => videoId);
 
     const newFolderId = `folder_${Date.now()}`;
-
     setFolders((prev) => {
       const updated = {
-        folders: {
-          ...prev.folders,
-          [newFolderId]: {
-            id: newFolderId,
-            name: folderName,
-            videos: selectedVideoIds,
-            subFolders: [],
-            createdAt: Date.now(),
-            parentFolder: parent,
-          },
-          [parent]: {
-            ...prev.folders[parent],
-            subFolders: [...prev.folders[parent].subFolders, newFolderId],
-          },
+        ...prev,
+        [newFolderId]: {
+          id: newFolderId,
+          name: folderName,
+          videos: selectedVideoIds,
+          subFolders: [],
+          createdAt: Date.now(),
+          parentFolder: parent,
+        },
+        [parent]: {
+          ...prev[parent],
+          subFolders: [...prev[parent].subFolders, newFolderId],
         },
       };
 
@@ -60,10 +57,15 @@ const SelectVideos = ({
         const db = event.target.result;
         const transaction = db.transaction("folders", "readwrite");
         const store = transaction.objectStore("folders");
-        store.put(updated, "foldersData");
+
+        // Store new folder
+        store.put(updated[newFolderId]);
+
+        // Update parent folder
+        store.put(updated[parent]);
 
         transaction.oncomplete = () => {
-          console.log("Folders have been updated in the database.");
+          console.log("Folders saved to IndexedDB.");
         };
 
         transaction.onerror = (event) => {

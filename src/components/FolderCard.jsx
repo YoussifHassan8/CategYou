@@ -6,6 +6,7 @@ const FolderCard = ({ folderName, videoId, numberOfVideos, folderId }) => {
   const handleFolderClick = () => {
     navigate(`/LikedVideos/folders/${folderId}`);
   };
+  console.log(88);
 
   return (
     <li

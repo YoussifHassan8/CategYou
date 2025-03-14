@@ -12,39 +12,50 @@ const Folders = () => {
   const isSpecificFolder = location.pathname !== "/LikedVideos/folders";
 
   const [folders, setFolders] = useState({
-    folders: {
-      root: {
-        id: "root",
-        name: "Root",
-        videos: [],
-        subFolders: [],
-        createdAt: Date.now(),
-      },
+    root: {
+      id: "root",
+      name: "Root",
+      videos: [],
+      subFolders: [],
+      createdAt: Date.now(),
     },
   });
 
   useEffect(() => {
-    const request = window.indexedDB.open("LikedVideosDB");
+    const request = window.indexedDB.open("LikedVideosDB", 1);
+
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      db.createObjectStore("folders", { keyPath: "id" });
+    };
 
     request.onsuccess = (event) => {
       const db = event.target.result;
+      const transaction = db.transaction("folders", "readonly");
+      const store = transaction.objectStore("folders");
+      const getAllRequest = store.getAll();
 
-      const folderTransaction = db.transaction("folders", "readonly");
-      const folderStore = folderTransaction.objectStore("folders");
-      const getFoldersRequest = folderStore.get("foldersData");
+      getAllRequest.onsuccess = () => {
+        const fetchedFolders = getAllRequest.result.reduce((acc, folder) => {
+          acc[folder.id] = folder;
+          return acc;
+        }, {});
 
-      getFoldersRequest.onsuccess = () => {
-        if (getFoldersRequest.result) {
-          setFolders(getFoldersRequest.result);
-        }
+        setFolders((prev) => ({
+          ...prev,
+          ...fetchedFolders,
+        }));
+      };
+
+      getAllRequest.onerror = () => {
+        console.error("Error fetching folders from IndexedDB.");
       };
     };
 
     request.onerror = (event) => {
-      console.error("Database error:", event.target.errorCode);
+      console.error("IndexedDB error:", event.target.errorCode);
     };
   }, []);
-
   return (
     <div>
       {isSpecificFolder ? (
@@ -57,7 +68,7 @@ const Folders = () => {
             setCurrentWindow,
           }}
         />
-      ) : folders.folders.root.subFolders.length === 0 ? (
+      ) : folders.root.subFolders.length === 0 ? (
         <NoFolders
           currentWindow={currentWindow}
           setCurrentWindow={setCurrentWindow}
