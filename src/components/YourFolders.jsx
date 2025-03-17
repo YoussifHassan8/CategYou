@@ -13,7 +13,6 @@ const YourFolders = ({
   console.log(folders);
   const rootFolderIds = folders.root.subFolders;
   const rootFolders = rootFolderIds.map((id) => folders[id]);
-
   return (
     <>
       <button
@@ -44,6 +43,7 @@ const YourFolders = ({
             }
             numberOfVideos={folder.videos.length}
             folderId={folder.id}
+            setFolders={setFolders}
           />
         ))}
       </ul>

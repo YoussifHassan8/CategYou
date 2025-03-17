@@ -99,7 +99,7 @@ const LikedVideos = ({ accessToken, setAccessToken }) => {
         <ul className="grid grid-cols-[repeat(auto-fit,minmax(340px,1fr))] gap-8">
           {likedVideos.length > 0
             ? likedVideos.map((video) => (
-                <VideoCard key={video.id} video={video} />
+                <VideoCard key={video.id} video={video} icon={false} />
               ))
             : Array(8)
                 .fill()

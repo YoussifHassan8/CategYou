@@ -40,7 +40,7 @@ const Folders = () => {
           acc[folder.id] = folder;
           return acc;
         }, {});
-
+        console.log(fetchedFolders);
         setFolders((prev) => ({
           ...prev,
           ...fetchedFolders,

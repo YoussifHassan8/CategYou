@@ -86,11 +86,18 @@ const SpecificFolder = () => {
             }
             numberOfVideos={folder.videos.length}
             folderId={folder.id}
+            setFolders={setFolders}
           />
         ))}
 
         {matchingVideos.map((video) => (
-          <VideoCard key={video.id} video={video} />
+          <VideoCard
+            key={video.id}
+            video={video}
+            icon={true}
+            setFolders={setFolders}
+            videoParent={currentFolder.id}
+          />
         ))}
       </ul>
     </div>

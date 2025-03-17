@@ -58,10 +58,7 @@ const SelectVideos = ({
         const transaction = db.transaction("folders", "readwrite");
         const store = transaction.objectStore("folders");
 
-        // Store new folder
         store.put(updated[newFolderId]);
-
-        // Update parent folder
         store.put(updated[parent]);
 
         transaction.oncomplete = () => {
