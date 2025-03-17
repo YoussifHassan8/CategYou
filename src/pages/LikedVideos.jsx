@@ -65,7 +65,7 @@ const LikedVideos = ({ accessToken, setAccessToken }) => {
       console.error("Error fetching videos:", error);
     }
   };
-
+  console.log(likedVideos);
   return (
     <section className="container">
       <Header accessToken={accessToken} setAccessToken={setAccessToken} />

@@ -1,44 +1,31 @@
 import { CgSortAz } from "react-icons/cg";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 
 const Sort = ({ likedVideos, setLikedVideos }) => {
   const [isOpen, setIsOpen] = useState(false);
+
+  const originalOrder = useRef([]);
+
+  useEffect(() => {
+    if (likedVideos.length > 0 && originalOrder.current.length === 0) {
+      originalOrder.current = [...likedVideos];
+    }
+    console.log(originalOrder);
+  }, [likedVideos]);
+
   const toggleDropdown = (event) => {
     event.stopPropagation();
     setIsOpen((prev) => !prev);
   };
 
   const sortVideosByDateAdded = (order) => {
-    const request = window.indexedDB.open("LikedVideosDB");
+    const sortedVideos =
+      order === "newest"
+        ? [...originalOrder.current]
+        : [...originalOrder.current].reverse();
 
-    request.onsuccess = (event) => {
-      const db = event.target.result;
-      const transaction = db.transaction("videos", "readonly");
-      const store = transaction.objectStore("videos");
-      const getAllRequest = store.getAll();
-
-      getAllRequest.onsuccess = () => {
-        let sortedVideos = getAllRequest.result;
-
-        if (order === "newest")
-          sortedVideos = sortedVideos.sort((a, b) => a.order - b.order);
-        else sortedVideos = sortedVideos.sort((a, b) => b.order - a.order);
-
-        setLikedVideos(sortedVideos);
-      };
-
-      getAllRequest.onerror = (event) => {
-        console.error(
-          "Error fetching videos from IndexedDB:",
-          event.target.errorCode
-        );
-      };
-    };
-
-    request.onerror = (event) => {
-      console.error("Database error:", event.target.errorCode);
-    };
+    setLikedVideos(sortedVideos);
   };
 
   const sortVideosByDatePublished = (order) => {
@@ -47,7 +34,6 @@ const Sort = ({ likedVideos, setLikedVideos }) => {
       const dateB = new Date(b.snippet.publishedAt);
       return order === "newest" ? dateB - dateA : dateA - dateB;
     });
-
     setLikedVideos(sortedVideos);
   };
 
@@ -55,13 +41,12 @@ const Sort = ({ likedVideos, setLikedVideos }) => {
     const sortedVideos = [...likedVideos].sort(
       (a, b) => b.statistics.viewCount - a.statistics.viewCount
     );
-
     setLikedVideos(sortedVideos);
   };
 
   return (
     <button
-      className="relative flex gap-1 items-center cursor-pointer"
+      className="relative flex gap-1 items-center cursor-pointer z-10"
       onClick={toggleDropdown}
     >
       <CgSortAz fontSize={32} />

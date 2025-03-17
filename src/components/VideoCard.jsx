@@ -47,7 +47,7 @@ const VideoCard = ({ video, icon, setFolders, videoParent }) => {
   return (
     <li className="relative group rounded-xl overflow-hidden mb-4 max-w-[340px] hover:shadow-lg transition-all duration-200 ease-out border-gray-200 dark:border-gray-700">
       {icon && (
-        <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150 z-10">
+        <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
           <button
             onClick={(e) => {
               e.stopPropagation();

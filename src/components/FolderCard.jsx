@@ -135,7 +135,7 @@ const FolderCard = ({
             onClick={(e) => e.stopPropagation()}
           >
             <p className="mb-4 dark:text-white">
-              Are you sure that you want to delete <strong>{folderName}</strong>
+              Are you sure that you want to delete <strong>{folderName}</strong>{" "}
               and all its content?
             </p>
             <div className="flex gap-2 justify-center">
