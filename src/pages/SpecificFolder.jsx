@@ -55,13 +55,22 @@ const SpecificFolder = () => {
 
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold">{pathString}</h2>
-        <button
-          className="flex items-center justify-center gap-2 rounded-xl px-6 py-3 transition-all duration-300 shadow-sm text-white font-medium text-lg bg-[#FF0033] cursor-pointer hover:bg-[#E60030]"
-          onClick={() => setCurrentWindow(1)}
-        >
-          <IoMdAddCircleOutline className="text-2xl" />
-          Create new folder
-        </button>
+        <div className="flex flex-wrap gap-4">
+          <button
+            className="flex items-center justify-center gap-2 rounded-xl px-6 py-3 transition-all duration-300 shadow-sm text-white font-medium text-lg bg-[#FF0033] cursor-pointer hover:bg-[#E60030]"
+            onClick={() => setCurrentWindow(1)}
+          >
+            <IoMdAddCircleOutline className="text-2xl" />
+            Create new folder
+          </button>
+          <button
+            className="flex items-center justify-center gap-2 rounded-xl px-6 py-3 transition-all duration-300 shadow-sm text-white font-medium text-lg bg-[#FF0033] cursor-pointer hover:bg-[#E60030]"
+            onClick={() => setCurrentWindow(2)}
+          >
+            <IoMdAddCircleOutline className="text-2xl" />
+            Add new video
+          </button>
+        </div>
       </div>
 
       {(currentWindow === 1 || currentWindow === 2) && (
@@ -71,6 +80,7 @@ const SpecificFolder = () => {
           likedVideos={likedVideos}
           currentWindow={currentWindow}
           setCurrentWindow={setCurrentWindow}
+          currentFolderID={folderID}
         />
       )}
 
