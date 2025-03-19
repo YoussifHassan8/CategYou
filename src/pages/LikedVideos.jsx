@@ -83,10 +83,6 @@ const LikedVideos = ({ accessToken, setAccessToken }) => {
         allVideos = allVideos.concat(videosData.items);
       }
 
-      // allVideos.forEach((video, index) => {
-      //   video.order = index;
-      // });
-
       setLikedVideos(allVideos);
     } catch (error) {
       console.error("Error fetching videos:", error);

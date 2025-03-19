@@ -30,7 +30,10 @@ const DeleteWindow = ({
             <span>Cancel</span>
           </button>
           <button
-            onClick={() => deleteFolder(folderId)}
+            onClick={(e) => {
+              e.stopPropagation();
+              deleteFolder(folderId);
+            }}
             className="px-5 py-3 rounded-xl bg-gradient-to-br from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 
                     transition-all duration-300 text-white flex-1 flex items-center justify-center gap-2
                     hover:-translate-y-0.5 shadow-red-500/30 hover:shadow-lg"
