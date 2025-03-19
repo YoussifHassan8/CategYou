@@ -4,13 +4,13 @@ import Header from "../components/Header";
 import VideoCard from "../components/VideoCard";
 import Sort from "../components/Sort";
 import VideoCardSkeleton from "../components/VideoCardSkeleton";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigation } from "react-router-dom";
 
 const LikedVideos = ({ accessToken, setAccessToken }) => {
   const [likedVideos, setLikedVideos] = useState([]);
   const location = useLocation();
   const isFolderView = location.pathname.includes("folders");
-
+  const navigate = useNavigation();
   useEffect(() => {
     fetchLikedVideos();
   }, []);
@@ -28,6 +28,12 @@ const LikedVideos = ({ accessToken, setAccessToken }) => {
         }
       );
       if (!playlistResponse.ok) {
+        if (playlistResponse.status === 401) {
+          localStorage.removeItem("accessToken");
+          setAccessToken(null);
+          navigate("/");
+          return;
+        }
         throw new Error("Failed to fetch playlists");
       }
 
