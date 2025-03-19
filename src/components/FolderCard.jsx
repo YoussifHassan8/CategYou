@@ -180,6 +180,7 @@ const FolderCard = ({
             alt="Video Thumbnail"
             className="w-full h-full object-cover transition-transform duration-500 ease-out group-ho6ver:scale-110"
             loading="lazy"
+            draggable="false"
           />
         ) : (
           <FolderIcon />
