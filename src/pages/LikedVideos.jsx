@@ -4,69 +4,90 @@ import Header from "../components/Header";
 import VideoCard from "../components/VideoCard";
 import Sort from "../components/Sort";
 import VideoCardSkeleton from "../components/VideoCardSkeleton";
-import { Link, Outlet, useLocation, useNavigation } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 const LikedVideos = ({ accessToken, setAccessToken }) => {
   const [likedVideos, setLikedVideos] = useState([]);
   const location = useLocation();
   const isFolderView = location.pathname.includes("folders");
-  const navigate = useNavigation();
+  const navigate = useNavigate();
   useEffect(() => {
     fetchLikedVideos();
   }, []);
 
   const fetchLikedVideos = async () => {
     try {
-      const playlistResponse = await fetch(
-        `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=LL&maxResults=50`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            Accept: "application/json",
-          },
+      let allPlaylistItems = [];
+      let nextPageToken = "";
+
+      do {
+        const playlistResponse = await fetch(
+          `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&playlistId=LL&maxResults=50${
+            nextPageToken ? `&pageToken=${nextPageToken}` : ""
+          }`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              Accept: "application/json",
+            },
+          }
+        );
+
+        if (!playlistResponse.ok) {
+          if (playlistResponse.status === 401) {
+            localStorage.removeItem("accessToken");
+            setAccessToken(null);
+            navigate("/");
+            return;
+          }
+          throw new Error("Failed to fetch playlists");
         }
+
+        const playlistData = await playlistResponse.json();
+        allPlaylistItems = allPlaylistItems.concat(playlistData.items);
+        nextPageToken = playlistData.nextPageToken || "";
+        console.log(nextPageToken);
+      } while (nextPageToken);
+
+      if (allPlaylistItems.length === 0) return;
+
+      const videoIds = allPlaylistItems.map(
+        (item) => item.snippet.resourceId.videoId
       );
-      if (!playlistResponse.ok) {
-        if (playlistResponse.status === 401) {
-          localStorage.removeItem("accessToken");
-          setAccessToken(null);
-          navigate("/");
-          return;
+
+      const chunkSize = 50;
+      let allVideos = [];
+
+      for (let i = 0; i < videoIds.length; i += chunkSize) {
+        const chunkIds = videoIds.slice(i, i + chunkSize);
+
+        const videosResponse = await fetch(
+          `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${chunkIds.join(
+            ","
+          )}&maxResults=${chunkSize}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              Accept: "application/json",
+            },
+          }
+        );
+
+        if (!videosResponse.ok) {
+          throw new Error("Failed to fetch video details");
         }
-        throw new Error("Failed to fetch playlists");
+
+        const videosData = await videosResponse.json();
+        allVideos = allVideos.concat(videosData.items);
       }
 
-      const playlistData = await playlistResponse.json();
+      // allVideos.forEach((video, index) => {
+      //   video.order = index;
+      // });
 
-      if (!playlistData.items || playlistData.items.length === 0) return;
-
-      const videoIds = playlistData.items
-        .map((item) => item.snippet.resourceId.videoId)
-        .join(",");
-
-      const videosResponse = await fetch(
-        `https://www.googleapis.com/youtube/v3/videos?part=snippet,statistics&id=${videoIds}&maxResults=50`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-            Accept: "application/json",
-          },
-        }
-      );
-
-      if (!videosResponse.ok) {
-        throw new Error("Failed to fetch video details");
-      }
-
-      const videosData = await videosResponse.json();
-
-      videosData.items.forEach((video, index) => {
-        video.order = index;
-      });
-
-      setLikedVideos(videosData.items);
+      setLikedVideos(allVideos);
     } catch (error) {
       console.error("Error fetching videos:", error);
     }
