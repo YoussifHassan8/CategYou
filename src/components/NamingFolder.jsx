@@ -21,7 +21,7 @@ const NamingFolder = ({ folderName, setFolderName, setCurrentWindow }) => {
   };
 
   return (
-    <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 px-4 py-3 rounded-lg bg-white dark:bg-[#3E3E3E] shadow-lg border border-gray-200 dark:border-gray-700 space-y-2 w-[300px]">
+    <div className="absolute z-10 top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 px-4 py-3 rounded-lg bg-white dark:bg-[#3E3E3E] shadow-lg border border-gray-200 dark:border-gray-700 space-y-2 w-[300px]">
       <div className="flex items-center">
         <h2 className="ml-auto font-medium text-gray-800 dark:text-white">
           New folder

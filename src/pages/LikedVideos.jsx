@@ -47,7 +47,6 @@ const LikedVideos = ({ accessToken, setAccessToken }) => {
         const playlistData = await playlistResponse.json();
         allPlaylistItems = allPlaylistItems.concat(playlistData.items);
         nextPageToken = playlistData.nextPageToken || "";
-        console.log(nextPageToken);
       } while (nextPageToken);
 
       if (allPlaylistItems.length === 0) return;
@@ -88,7 +87,6 @@ const LikedVideos = ({ accessToken, setAccessToken }) => {
       console.error("Error fetching videos:", error);
     }
   };
-  console.log(likedVideos);
   return (
     <section className="container">
       <Header accessToken={accessToken} setAccessToken={setAccessToken} />
@@ -124,7 +122,7 @@ const LikedVideos = ({ accessToken, setAccessToken }) => {
             ? likedVideos.map((video) => (
                 <VideoCard key={video.id} video={video} icon={false} />
               ))
-            : Array(8)
+            : Array(6)
                 .fill()
                 .map((_, index) => <VideoCardSkeleton key={index} />)}
         </ul>

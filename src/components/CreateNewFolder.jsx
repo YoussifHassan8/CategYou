@@ -8,7 +8,8 @@ const CreateNewFolder = ({
   likedVideos,
   currentWindow,
   setCurrentWindow,
-  currentFolderID,
+  sendVideo,
+  setSendVideo,
 }) => {
   const [folderName, setFolderName] = useState("");
   return (
@@ -26,7 +27,8 @@ const CreateNewFolder = ({
           setFolders={setFolders}
           likedVideos={likedVideos}
           setCurrentWindow={setCurrentWindow}
-          currentFolderID={currentFolderID}
+          sendVideo={sendVideo}
+          setSendVideo={setSendVideo}
         />
       ) : (
         <div></div>
@@ -41,7 +43,8 @@ CreateNewFolder.propTypes = {
   likedVideos: PropTypes.array.isRequired,
   currentWindow: PropTypes.number.isRequired,
   setCurrentWindow: PropTypes.func.isRequired,
-  currentFolderID: PropTypes.string,
+  sendVideo: PropTypes.bool.isRequired,
+  setSendVideo: PropTypes.func.isRequired,
 };
 
 export default CreateNewFolder;

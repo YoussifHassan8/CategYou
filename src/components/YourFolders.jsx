@@ -10,7 +10,6 @@ const YourFolders = ({
   currentWindow,
   setCurrentWindow,
 }) => {
-  console.log(folders);
   const rootFolderIds = folders.root.subFolders;
   const rootFolders = rootFolderIds.map((id) => folders[id]);
   return (

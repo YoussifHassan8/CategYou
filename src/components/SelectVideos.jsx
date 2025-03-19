@@ -10,7 +10,8 @@ const SelectVideos = ({
   setFolders,
   likedVideos,
   setCurrentWindow,
-  currentFolderID,
+  sendVideo,
+  setSendVideo,
 }) => {
   const { folderID } = useParams();
   const [selectedVideos, setSelectedVideos] = useState(() => {
@@ -32,29 +33,22 @@ const SelectVideos = ({
       .filter(([, isSelected]) => isSelected)
       .map(([videoId]) => videoId);
 
-    if (!selectedVideoIds.length) {
-      setCurrentWindow(0);
-      return;
-    }
-
-    if (currentFolderID) {
+    if (sendVideo) {
+      // Add videos to existing folder
       setFolders((prev) => {
-        const existingFolder = prev[currentFolderID];
-        const existingVideos = new Set(existingFolder.videos);
+        const currentFolder = prev[folderID];
+        const existingVideos = [...currentFolder.videos];
         const newVideos = selectedVideoIds.filter(
-          (id) => !existingVideos.has(id)
+          (id) => !existingVideos.includes(id)
         );
-
-        if (!newVideos.length) {
-          setCurrentWindow(0);
-          return prev;
-        }
+        const updatedVideos = [...existingVideos, ...newVideos];
 
         const updatedFolder = {
-          ...existingFolder,
-          videos: [...existingFolder.videos, ...newVideos],
+          ...currentFolder,
+          videos: updatedVideos,
         };
 
+        // Update IndexedDB
         const request = window.indexedDB.open("LikedVideosDB");
         request.onsuccess = (event) => {
           const db = event.target.result;
@@ -68,10 +62,14 @@ const SelectVideos = ({
 
         return {
           ...prev,
-          [currentFolderID]: updatedFolder,
+          [folderID]: updatedFolder,
         };
       });
+
+      setCurrentWindow(0);
+      setSendVideo(false);
     } else {
+      // Create new folder
       if (!folderName?.trim()) {
         alert("Please enter a folder name");
         return;
@@ -95,6 +93,7 @@ const SelectVideos = ({
           subFolders: [...prev[parent].subFolders, newFolderId],
         };
 
+        // Update IndexedDB
         const request = window.indexedDB.open("LikedVideosDB");
         request.onsuccess = (event) => {
           const db = event.target.result;
@@ -112,26 +111,29 @@ const SelectVideos = ({
           [parent]: updatedParent,
         };
       });
-    }
 
-    setCurrentWindow(0);
+      setCurrentWindow(0);
+    }
   };
 
   return (
-    <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 px-4 py-3 rounded-lg bg-white dark:bg-[#3E3E3E] shadow-lg border border-gray-200 dark:border-gray-700 space-y-2 w-[350px]">
+    <div className="absolute z-10 top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 px-4 py-3 rounded-lg bg-white dark:bg-[#3E3E3E] shadow-lg border border-gray-200 dark:border-gray-700 space-y-2 w-[350px]">
       <div className="flex items-center justify-center">
-        {!currentFolderID && (
+        {!sendVideo && (
           <IoMdArrowRoundBack
             className="cursor-pointer"
             onClick={() => setCurrentWindow(1)}
           />
         )}
         <h2 className="ml-auto font-medium text-gray-800 dark:text-white">
-          {currentFolderID ? "Add Videos to Folder" : "Select Videos"}
+          {sendVideo ? "Add Videos to Folder" : "Select Videos"}
         </h2>
         <MdCancel
           className="ml-auto cursor-pointer text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors text-xl"
-          onClick={() => setCurrentWindow(0)}
+          onClick={() => {
+            setCurrentWindow(0);
+            setSendVideo(false);
+          }}
         />
       </div>
 
@@ -152,7 +154,7 @@ const SelectVideos = ({
           bg-[#FF0033] cursor-pointer hover:bg-[#E60030]"
         onClick={handleSubmit}
       >
-        {currentFolderID ? "Add Videos" : "Create Folder"}
+        {sendVideo ? "Add Videos" : "Create Folder"}
       </button>
     </div>
   );
@@ -163,7 +165,8 @@ SelectVideos.propTypes = {
   setFolders: PropTypes.func.isRequired,
   likedVideos: PropTypes.array.isRequired,
   setCurrentWindow: PropTypes.func.isRequired,
-  currentFolderID: PropTypes.string,
+  sendVideo: PropTypes.bool.isRequired,
+  setSendVideo: PropTypes.func.isRequired,
 };
 
 export default SelectVideos;

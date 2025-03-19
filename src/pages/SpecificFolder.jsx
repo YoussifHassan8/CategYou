@@ -4,13 +4,14 @@ import FolderCard from "../components/FolderCard";
 import VideoCard from "../components/VideoCard";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import CreateNewFolder from "../components/CreateNewFolder";
+import { useState } from "react";
 
 const SpecificFolder = () => {
   const { folders, setFolders, likedVideos, currentWindow, setCurrentWindow } =
     useOutletContext();
   const navigate = useNavigate();
   const { folderID } = useParams();
-
+  const [sendVideo, setSendVideo] = useState(false);
   const isTheFolderFound = Object.hasOwn(folders, folderID);
 
   if (!isTheFolderFound) {
@@ -65,7 +66,10 @@ const SpecificFolder = () => {
           </button>
           <button
             className="flex items-center justify-center gap-2 rounded-xl px-6 py-3 transition-all duration-300 shadow-sm text-white font-medium text-lg bg-[#FF0033] cursor-pointer hover:bg-[#E60030]"
-            onClick={() => setCurrentWindow(2)}
+            onClick={() => {
+              setCurrentWindow(2);
+              setSendVideo(true);
+            }}
           >
             <IoMdAddCircleOutline className="text-2xl" />
             Add new video
@@ -80,7 +84,8 @@ const SpecificFolder = () => {
           likedVideos={likedVideos}
           currentWindow={currentWindow}
           setCurrentWindow={setCurrentWindow}
-          currentFolderID={folderID}
+          sendVideo={sendVideo}
+          setSendVideo={setSendVideo}
         />
       )}
 

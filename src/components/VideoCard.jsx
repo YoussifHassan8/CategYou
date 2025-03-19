@@ -11,19 +11,16 @@ const VideoCard = ({ video, icon, setFolders, videoParent }) => {
       const parentFolder = newFolders[videoParent];
 
       if (parentFolder) {
-        // Filter out the video from the videos array
         parentFolder.videos = parentFolder.videos.filter(
           (id) => id !== videoId
         );
 
-        // Update IndexedDB
         const request = window.indexedDB.open("LikedVideosDB");
         request.onsuccess = (event) => {
           const db = event.target.result;
           const transaction = db.transaction("folders", "readwrite");
           const store = transaction.objectStore("folders");
 
-          // Update the parent folder in the database
           store.put(parentFolder);
 
           transaction.oncomplete = () => {

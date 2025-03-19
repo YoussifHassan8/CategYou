@@ -132,7 +132,7 @@ const FolderCard = ({
       };
     });
   };
-
+  console.log(isDragging);
   return (
     <li
       draggable

@@ -11,7 +11,6 @@ const Sort = ({ likedVideos, setLikedVideos }) => {
     if (likedVideos.length > 0 && originalOrder.current.length === 0) {
       originalOrder.current = [...likedVideos];
     }
-    console.log(originalOrder);
   }, [likedVideos]);
 
   const toggleDropdown = (event) => {
