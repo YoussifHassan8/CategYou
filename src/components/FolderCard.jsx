@@ -22,7 +22,7 @@ const FolderCard = ({
     navigate(`/LikedVideos/folders/${folderId}`);
   };
 
-  const deleteFolder = async (folderId) => {
+  const deleteFolder = (folderId) => {
     setFolders((prev) => {
       const folderToDelete = prev[folderId];
       const parentId = folderToDelete.parentFolder;
@@ -57,7 +57,6 @@ const FolderCard = ({
         const db = event.target.result;
         const transaction = db.transaction("folders", "readwrite");
         const store = transaction.objectStore("folders");
-
         foldersToDeleteArray.forEach((id) => store.delete(id));
         if (newFolders[parentId]) {
           store.put(newFolders[parentId]);
@@ -136,7 +135,7 @@ const FolderCard = ({
           [draggedFolderId]: updatedDragged,
         };
       });
-    } else if (type === "video") {
+    } else {
       const draggedVideoId = e.dataTransfer.getData("videoId");
       const currentFolderId = e.dataTransfer.getData("currentFolderId");
 
@@ -148,12 +147,10 @@ const FolderCard = ({
         if (!sourceFolder || !targetFolder || currentFolderId === folderId)
           return prev;
 
-        // Remove from source folder
         sourceFolder.videos = sourceFolder.videos.filter(
           (id) => id !== draggedVideoId
         );
 
-        // Add to target folder if not exists
         if (!targetFolder.videos.includes(draggedVideoId)) {
           targetFolder.videos.push(draggedVideoId);
         }
@@ -242,10 +239,10 @@ const FolderCard = ({
 
       {showConfirm && (
         <DeleteWindow
-          folderName={folderName}
+          itemName={folderName}
           setShowConfirm={setShowConfirm}
-          deleteFolder={deleteFolder}
-          folderId={folderId}
+          onDelete={() => deleteFolder(folderId)}
+          itemType="folder"
         />
       )}
     </li>

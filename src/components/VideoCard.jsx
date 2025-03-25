@@ -1,7 +1,7 @@
-// VideoCard.jsx
 import PropTypes from "prop-types";
 import { MdDelete } from "react-icons/md";
 import { useState } from "react";
+import DeleteWindow from "./DeleteWindow";
 
 const VideoCard = ({ video, icon, setFolders, videoParent }) => {
   const [showConfirm, setShowConfirm] = useState(false);
@@ -11,11 +11,11 @@ const VideoCard = ({ video, icon, setFolders, videoParent }) => {
     e.dataTransfer.setData("videoId", video.id);
     e.dataTransfer.setData("currentFolderId", videoParent);
     e.dataTransfer.effectAllowed = "move";
-    e.currentTarget.classList.add("opacity-50", "cursor-grabbing");
+    e.currentTarget.classList.add("opacity-50");
   };
 
   const handleDragEnd = (e) => {
-    e.currentTarget.classList.remove("opacity-50", "cursor-grabbing");
+    e.currentTarget.classList.remove("opacity-50");
   };
 
   const deleteVideo = (videoId) => {
@@ -33,30 +33,28 @@ const VideoCard = ({ video, icon, setFolders, videoParent }) => {
           const db = event.target.result;
           const transaction = db.transaction("folders", "readwrite");
           const store = transaction.objectStore("folders");
-
           store.put(parentFolder);
         };
       }
-
       return newFolders;
     });
   };
 
   return (
     <li
-      className="relative group rounded-xl overflow-hidden mb-4 max-w-[340px] hover:shadow-lg transition-all duration-200 ease-out border-gray-200 dark:border-gray-700"
+      className="relative group rounded-xl overflow-hidden mb-4 max-w-[340px] hover:shadow-lg transition-all duration-200 ease-out border-gray-200 dark:border-gray-700 cursor-grab"
       draggable
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >
       {icon && (
-        <div className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity duration-150">
+        <div className="absolute right-4 top-4 opacity-0 group-hover:opacity-100 transition-all duration-500 z-10">
           <button
             onClick={(e) => {
               e.stopPropagation();
               setShowConfirm(true);
             }}
-            className="p-2 bg-red-500/90 hover:bg-red-600 rounded-full backdrop-blur-sm text-white shadow-md transition-colors cursor-pointer"
+            className="p-2.5 bg-red-500/95 hover:bg-red-600 rounded-xl backdrop-blur-lg text-white shadow-xl hover:shadow-red-500/30 transition-all hover:-translate-y-0.5"
             aria-label="Delete video"
           >
             <MdDelete fontSize={20} />
@@ -94,41 +92,34 @@ const VideoCard = ({ video, icon, setFolders, videoParent }) => {
         </div>
       </div>
       {showConfirm && (
-        <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 rounded-xl">
-          <div className="bg-white dark:bg-gray-800 p-4 rounded-lg text-center">
-            <p className="mb-4 dark:text-white">
-              Are you sure you want to delete this video?
-            </p>
-            <div className="flex gap-2 justify-center">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowConfirm(false);
-                }}
-                className="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-white"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setShowConfirm(false);
-                  deleteVideo(video.id);
-                }}
-                className="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 text-white"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
+        <DeleteWindow
+          itemName={video.snippet.title}
+          setShowConfirm={setShowConfirm}
+          onDelete={() => deleteVideo(video.id)}
+          itemType="video"
+        />
       )}
     </li>
   );
 };
 
 VideoCard.propTypes = {
-  video: PropTypes.object.isRequired,
+  video: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    snippet: PropTypes.shape({
+      title: PropTypes.string.isRequired,
+      thumbnails: PropTypes.shape({
+        medium: PropTypes.shape({
+          url: PropTypes.string.isRequired,
+        }).isRequired,
+      }).isRequired,
+      channelTitle: PropTypes.string.isRequired,
+      publishedAt: PropTypes.string.isRequired,
+    }).isRequired,
+    statistics: PropTypes.shape({
+      viewCount: PropTypes.string,
+    }),
+  }).isRequired,
   icon: PropTypes.bool.isRequired,
   setFolders: PropTypes.func.isRequired,
   videoParent: PropTypes.string.isRequired,
