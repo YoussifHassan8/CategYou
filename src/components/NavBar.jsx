@@ -1,8 +1,12 @@
 import { useEffect } from "react";
 import Logo from "../ui/Logo";
 import { MdOutlineLightMode, MdDarkMode } from "react-icons/md";
-import PropTypes from "prop-types";
-const NavBar = ({ mode, setMode }) => {
+import { useState } from "react";
+
+const NavBar = () => {
+  const storedMode = localStorage.getItem("mode") || "light";
+  const [mode, setMode] = useState(storedMode);
+
   useEffect(() => {
     document.documentElement.classList.toggle("dark", mode === "dark");
     localStorage.setItem("mode", mode);
@@ -42,8 +46,5 @@ const NavBar = ({ mode, setMode }) => {
     </nav>
   );
 };
-NavBar.propTypes = {
-  mode: PropTypes.string.isRequired,
-  setMode: PropTypes.func.isRequired,
-};
+
 export default NavBar;

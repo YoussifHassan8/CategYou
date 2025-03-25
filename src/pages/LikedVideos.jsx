@@ -14,7 +14,6 @@ const LikedVideos = ({ accessToken, setAccessToken }) => {
   useEffect(() => {
     fetchLikedVideos();
   }, []);
-
   const fetchLikedVideos = async () => {
     try {
       let allPlaylistItems = [];
@@ -81,12 +80,12 @@ const LikedVideos = ({ accessToken, setAccessToken }) => {
         const videosData = await videosResponse.json();
         allVideos = allVideos.concat(videosData.items);
       }
-
       setLikedVideos(allVideos);
     } catch (error) {
       console.error("Error fetching videos:", error);
     }
   };
+  console.log(90);
   return (
     <section className="container">
       <Header accessToken={accessToken} setAccessToken={setAccessToken} />

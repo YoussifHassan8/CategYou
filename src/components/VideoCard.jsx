@@ -2,8 +2,8 @@ import PropTypes from "prop-types";
 import { MdDelete } from "react-icons/md";
 import { useState } from "react";
 import DeleteWindow from "./DeleteWindow";
-
-const VideoCard = ({ video, icon, setFolders, videoParent }) => {
+import { memo } from "react";
+const VideoCard = memo(({ video, icon, setFolders, videoParent }) => {
   const [showConfirm, setShowConfirm] = useState(false);
 
   const handleDragStart = (e) => {
@@ -39,7 +39,6 @@ const VideoCard = ({ video, icon, setFolders, videoParent }) => {
       return newFolders;
     });
   };
-
   return (
     <li
       className="relative group rounded-xl overflow-hidden mb-4 max-w-[340px] hover:shadow-lg transition-all duration-200 ease-out border-gray-200 dark:border-gray-700 cursor-grab"
@@ -101,7 +100,7 @@ const VideoCard = ({ video, icon, setFolders, videoParent }) => {
       )}
     </li>
   );
-};
+});
 
 VideoCard.propTypes = {
   video: PropTypes.shape({
@@ -125,4 +124,5 @@ VideoCard.propTypes = {
   videoParent: PropTypes.string.isRequired,
 };
 
+VideoCard.displayName = "VideoCard";
 export default VideoCard;

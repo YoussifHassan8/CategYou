@@ -11,11 +11,10 @@ const App = () => {
   const [accessToken, setAccessToken] = useState(
     localStorage.getItem("accessToken")
   );
-  const storedMode = localStorage.getItem("mode") || "light";
-  const [mode, setMode] = useState(storedMode);
+
   return (
     <>
-      <NavBar mode={mode} setMode={setMode} />
+      <NavBar />
       <Routes>
         <Route
           path="/"
@@ -23,11 +22,7 @@ const App = () => {
             accessToken ? (
               <Navigate to="/liked-videos" replace />
             ) : (
-              <Landing
-                setAccessToken={setAccessToken}
-                mode={mode}
-                setMode={setMode}
-              />
+              <Landing setAccessToken={setAccessToken} />
             )
           }
         />
