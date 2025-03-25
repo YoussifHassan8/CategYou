@@ -43,9 +43,9 @@ const SpecificFolder = () => {
         <button
           onClick={() => {
             if (currentFolder.parentFolder === "root") {
-              navigate("/LikedVideos/folders");
+              navigate("/liked-videos/folders");
             } else {
-              navigate(`/LikedVideos/folders/${currentFolder.parentFolder}`);
+              navigate(`/liked-videos/folders/${currentFolder.parentFolder}`);
             }
           }}
           className="cursor-pointer"

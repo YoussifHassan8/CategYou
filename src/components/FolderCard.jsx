@@ -19,7 +19,7 @@ const FolderCard = ({
   const [isDragging, setIsDragging] = useState(false);
 
   const handleFolderClick = () => {
-    navigate(`/LikedVideos/folders/${folderId}`);
+    navigate(`/liked-videos/folders/${folderId}`);
   };
 
   const deleteFolder = (folderId) => {

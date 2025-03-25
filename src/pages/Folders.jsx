@@ -9,7 +9,7 @@ const Folders = () => {
   const { likedVideos } = useOutletContext();
   const location = useLocation();
   const [currentWindow, setCurrentWindow] = useState(0);
-  const isSpecificFolder = location.pathname !== "/LikedVideos/folders";
+  const isSpecificFolder = location.pathname !== "/liked-videos/folders";
 
   const [folders, setFolders] = useState({
     root: {

@@ -21,7 +21,7 @@ const App = () => {
           path="/"
           element={
             accessToken ? (
-              <Navigate to="/LikedVideos" replace />
+              <Navigate to="/liked-videos" replace />
             ) : (
               <Landing
                 setAccessToken={setAccessToken}
@@ -32,7 +32,7 @@ const App = () => {
           }
         />
         <Route
-          path="/LikedVideos"
+          path="/liked-videos"
           element={
             accessToken ? (
               <LikedVideos

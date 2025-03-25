@@ -96,7 +96,7 @@ const LikedVideos = ({ accessToken, setAccessToken }) => {
         )}
         <div className="flex flex-wrap gap-2 ml-auto">
           <Link
-            to="/LikedVideos"
+            to="/liked-videos"
             className={`px-4 py-2 rounded-lg font-medium ${
               !isFolderView ? "bg-gray-100 dark:bg-gray-800" : ""
             }`}
@@ -104,7 +104,7 @@ const LikedVideos = ({ accessToken, setAccessToken }) => {
             Your liked videos
           </Link>
           <Link
-            to="/LikedVideos/folders"
+            to="/liked-videos/folders"
             className={`px-4 py-2 rounded-lg font-medium ${
               isFolderView ? "bg-gray-100 dark:bg-gray-800" : ""
             }`}
