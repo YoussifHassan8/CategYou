@@ -5,6 +5,7 @@ import { useState } from "react";
 import FolderIcon from "./FolderIcon";
 import DropAreaAlert from "./DropAreaAlert";
 import DeleteWindow from "./DeleteWindow";
+
 const FolderCard = ({
   folderName,
   videoId,
@@ -68,7 +69,8 @@ const FolderCard = ({
   };
 
   const handleDragStart = (e) => {
-    e.dataTransfer.setData("text/plain", folderId);
+    e.dataTransfer.setData("type", "folder");
+    e.dataTransfer.setData("folderId", folderId);
     e.dataTransfer.effectAllowed = "move";
     setIsDragging(true);
   };
@@ -86,53 +88,90 @@ const FolderCard = ({
   const handleDrop = (e) => {
     e.preventDefault();
     setIsDragOver(false);
-    const draggedFolderId = e.dataTransfer.getData("text/plain");
-    if (draggedFolderId === folderId) return;
+    const type = e.dataTransfer.getData("type");
 
-    setFolders((prev) => {
-      const draggedFolder = prev[draggedFolderId];
-      const targetFolder = prev[folderId];
-      const currentParentId = draggedFolder.parentFolder;
+    if (type === "folder") {
+      const draggedFolderId = e.dataTransfer.getData("folderId");
+      if (draggedFolderId === folderId) return;
 
-      if (!draggedFolder || !targetFolder || currentParentId === folderId)
-        return prev;
+      setFolders((prev) => {
+        const draggedFolder = prev[draggedFolderId];
+        const targetFolder = prev[folderId];
+        const currentParentId = draggedFolder.parentFolder;
 
-      const updatedParent = {
-        ...prev[currentParentId],
-        subFolders: prev[currentParentId].subFolders.filter(
-          (id) => id !== draggedFolderId
-        ),
-      };
+        if (!draggedFolder || !targetFolder || currentParentId === folderId)
+          return prev;
 
-      const updatedTarget = {
-        ...targetFolder,
-        subFolders: [...targetFolder.subFolders, draggedFolderId],
-      };
+        const updatedParent = {
+          ...prev[currentParentId],
+          subFolders: prev[currentParentId].subFolders.filter(
+            (id) => id !== draggedFolderId
+          ),
+        };
 
-      const updatedDragged = {
-        ...draggedFolder,
-        parentFolder: folderId,
-      };
+        const updatedTarget = {
+          ...targetFolder,
+          subFolders: [...targetFolder.subFolders, draggedFolderId],
+        };
 
-      const request = window.indexedDB.open("LikedVideosDB");
-      request.onsuccess = (event) => {
-        const db = event.target.result;
-        const transaction = db.transaction("folders", "readwrite");
-        const store = transaction.objectStore("folders");
-        [updatedParent, updatedTarget, updatedDragged].forEach((item) =>
-          store.put(item)
+        const updatedDragged = {
+          ...draggedFolder,
+          parentFolder: folderId,
+        };
+
+        const request = window.indexedDB.open("LikedVideosDB");
+        request.onsuccess = (event) => {
+          const db = event.target.result;
+          const transaction = db.transaction("folders", "readwrite");
+          const store = transaction.objectStore("folders");
+          [updatedParent, updatedTarget, updatedDragged].forEach((item) =>
+            store.put(item)
+          );
+        };
+
+        return {
+          ...prev,
+          [currentParentId]: updatedParent,
+          [folderId]: updatedTarget,
+          [draggedFolderId]: updatedDragged,
+        };
+      });
+    } else if (type === "video") {
+      const draggedVideoId = e.dataTransfer.getData("videoId");
+      const currentFolderId = e.dataTransfer.getData("currentFolderId");
+
+      setFolders((prev) => {
+        const newFolders = { ...prev };
+        const sourceFolder = newFolders[currentFolderId];
+        const targetFolder = newFolders[folderId];
+
+        if (!sourceFolder || !targetFolder || currentFolderId === folderId)
+          return prev;
+
+        // Remove from source folder
+        sourceFolder.videos = sourceFolder.videos.filter(
+          (id) => id !== draggedVideoId
         );
-      };
 
-      return {
-        ...prev,
-        [currentParentId]: updatedParent,
-        [folderId]: updatedTarget,
-        [draggedFolderId]: updatedDragged,
-      };
-    });
+        // Add to target folder if not exists
+        if (!targetFolder.videos.includes(draggedVideoId)) {
+          targetFolder.videos.push(draggedVideoId);
+        }
+
+        const request = window.indexedDB.open("LikedVideosDB");
+        request.onsuccess = (event) => {
+          const db = event.target.result;
+          const transaction = db.transaction("folders", "readwrite");
+          const store = transaction.objectStore("folders");
+          store.put(sourceFolder);
+          store.put(targetFolder);
+        };
+
+        return newFolders;
+      });
+    }
   };
-  console.log(isDragging);
+
   return (
     <li
       draggable
@@ -178,7 +217,7 @@ const FolderCard = ({
           <img
             src={`https://i.ytimg.com/vi/${videoId}/mqdefault.jpg`}
             alt="Video Thumbnail"
-            className="w-full h-full object-cover transition-transform duration-500 ease-out group-ho6ver:scale-110"
+            className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
             loading="lazy"
             draggable="false"
           />
