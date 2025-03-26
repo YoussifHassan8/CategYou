@@ -38,6 +38,9 @@ CategYou empowers users to:
 
 - **Logo**: A familiar YouTube-inspired design with a red folder icon instead of the play button.
 
+![temp](public/photo_2025-03-26_02-43-56.jpg)
+
+
 - **UI/UX**:
 
   - **Folder Explorer**: Mimics a file manager (like Windows Explorer) for intuitive navigation.
