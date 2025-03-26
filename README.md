@@ -15,6 +15,10 @@ I built **CategYou** to solve this:
 
 Imagine having a **file explorer for your YouTube likes** – that’s CategYou.
 
+## Preview
+
+The website is currently hosted on netlify at [https://sharify-gh.netlify.app/](https://categyou.netlify.app/)
+
 ## ✨ Capabilities
 CategYou empowers users to:
 
