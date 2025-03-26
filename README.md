@@ -65,7 +65,7 @@ CategYou empowers users to:
 
   4. This token fetches the user’s Liked Videos via the YouTube Data API.
 
-**Token Handling:
+Token Handling:
 
 - Tokens expire after 1 hour. Users are prompted to re-authenticate seamlessly.
 
