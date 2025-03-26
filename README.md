@@ -65,7 +65,22 @@ CategYou empowers users to:
 
   4. This token fetches the user’s Liked Videos via the YouTube Data API.
 
-Token Handling:
+**Token Handling:
 
 - Tokens expire after 1 hour. Users are prompted to re-authenticate seamlessly.
 
+## 🗄️ Data Storage
+CategYou uses **IndexedDB** to store folder hierarchies and video relationships client-side. Below are the implementation details:
+- **Database Name**: LikedVideosDB
+
+- **Object Store**: folders
+
+  - **id** (Primary Key)
+
+  - **name** (Folder name)
+
+  - **videos** (Array of video IDs that are inside the folder)
+
+  - **subFolders** (Array of folder IDs that are inside the folder)
+
+  - **createdAt** (When the folder is created)
