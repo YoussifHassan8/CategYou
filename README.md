@@ -7,11 +7,11 @@ I’ve always struggled with YouTube’s "Liked Videos" playlist. Over time, it 
 
 I built **CategYou** to solve this:
 
-**Organize freely**: Create nested folders (like "Programming/Python/Tutorials" or "Music/Classic Rock") to mirror how my brain categorizes content.
+- **Organize freely**: Create nested folders (like "Programming/Python/Tutorials" or "Music/Classic Rock") to mirror how my brain categorizes content.
 
-**Sort smarter**: Sort videos by when I added them, when they were published, or by view count to prioritize quality.
+- **Sort smarter**: Sort videos by when I added them, when they were published, or by view count to prioritize quality.
 
-**No more endless scrolling**: Drag-and-drop videos into folders instead of manually reordering playlists.
+- **No more endless scrolling**: Drag-and-drop videos into folders instead of manually reordering playlists.
 
 Imagine having a **file explorer for your YouTube likes** – that’s CategYou.
 
